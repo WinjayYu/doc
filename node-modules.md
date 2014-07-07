@@ -105,3 +105,14 @@ npm支持通过registry指定私有仓库，现在也有较多的搭建仓库的
 目前看来第一种方案可以满足开发需求，而第二种方案需要npm registry指向私有仓库地址，在家无法连接，导致npm无法使用需要修改，
 相对也复杂一点，采用第一种npm+gitlab的方案。
 
+##参考资料
+
+shrinkwrap
+
+http://blog.nodejs.org/2012/02/27/managing-node-js-dependencies-with-shrinkwrap/
+
+https://www.npmjs.org/doc/cli/npm-shrinkwrap.html
+
+pac
+
+http://www.codinginthecrease.com/news_article/show/307636
