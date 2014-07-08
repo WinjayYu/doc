@@ -3,10 +3,10 @@
 
 ## 目的
 
-该方案主要解决一下两个问题：
+该方案主要解决两个问题：
 
-* 关于Node应用中依赖的第三方资源包如何管理
-* 内部团队开发的无法公开的node资源包如何管理(下载、更新...)
+* 关于Node应用中依赖的公共资源包资源包如何管理
+* 内部团队开发的私有资源包如何管理(下载、更新...)
 
 ## 现状
 
@@ -39,7 +39,7 @@
 
 ## 公用资源包管理方案
 
-### shrinkwrap
+### 1.shrinkwrap
 
 [shrinkwrap](https://www.npmjs.org/doc/cli/npm-shrinkwrap.html)是npm内置命令，通过npm shrinkwrap命令，生成npm-shrinkwrap.json文件可以锁定依赖资源包的版本，install是会优先使用该文件安装依赖资源包。
 
@@ -47,15 +47,18 @@
 
 ![shrinkwrap](./npm-shrinkwrap.png)
 
-### node-pac和npm rebuild
+### 2.node-pac和npm rebuild
 
 [node-pac](https://github.com/mikefrey/node-pac)可以将node_modules中的源码、编译前内容进行自动打包压缩，生成精简版的modules。
 
 我们可以通过node-pac生成精简版modules，提交svn管理。在编译流程中通过moduels解压，[npm rebuild](https://www.npmjs.org/doc/cli/npm-rebuild.html)编译得到完整版的node_modules。
 
-### FAQ
+### 方案流程图
 
-* 如何资源包？
+![flowchart](./node-modules.png)
+
+
+**如何更新资源包？**
 
 由于npm install会优先使用npm-shrink.json文件，正常情况下会一直使用shrink文件中固定的版本，如何进行版本更新呢。
 
@@ -63,14 +66,20 @@ npm提供了下面两个命令 ：
 
 [npm-outdated](https://www.npmjs.org/doc/cli/npm-outdated.html)查看已经过期的资源文件
 
-npm install --no-shrinkwrap //忽视npm-shrink.json文件
+npm install --no-shrinkwrap //忽视npm-shrink.json文件执行install
+
+**rebuild时间较长**
+
+从流程图中可以看出每次部署发布虽然不再需要下载资源包，但仍需要执行解压缩、rebuild，尤其可能rebuild时间较长影响编译速度。
+
+后续考虑封装[node-pac](https://github.com/mikefrey/node-pac)工具，提供只解压和rebuild本次更新的node包方案。
 
 ## 私有资源包的管理方案
 
 在Node应用开发过程中会有一些类似wise适配、passport、session管理等不合适放到npm上的node资源包，
 因此我们需要一个可以管理这种私有资源包的方案。
 
-可以有下面两个方案：
+可以有下面两个方案，目前考虑使用方案一更为合理：
 
 ###方案一：npm和gitlab
 
@@ -109,10 +118,13 @@ npm支持通过registry指定私有仓库，现在也有较多的搭建仓库的
 
 shrinkwrap
 
-http://blog.nodejs.org/2012/02/27/managing-node-js-dependencies-with-shrinkwrap/
-
-https://www.npmjs.org/doc/cli/npm-shrinkwrap.html
+    http://blog.nodejs.org/2012/02/27/managing-node-js-dependencies-with-shrinkwrap/
+    https://www.npmjs.org/doc/cli/npm-shrinkwrap.html
 
 pac
 
-http://www.codinginthecrease.com/news_article/show/307636
+    http://www.codinginthecrease.com/news_article/show/307636
+
+node_module-in-git
+
+    http://www.futurealoof.com/posts/nodemodules-in-git.html
