@@ -81,29 +81,22 @@ npm install --no-shrinkwrap //忽视npm-shrink.json文件执行install
 
 可以有下面两个方案，目前考虑使用方案一更为合理：
 
-###方案一：npm和gitlab
+###方案一：npm和lights
 
 npm的install支持package.json中的依赖资源地址通过url指定，如下面：
 
       "dependencies": {
         "express": "~4.4.3",
-        "strong-pm" : "http://fedev.baidu.com/~wangcheng/strong-pm2.tar.gz", //指定gz包
+        "strong-pm" : "http://lights.baidu.com/strong-pm2-1.0.0.tar.gz", //指定gz包
         "yog-wise" : "git+http://gitlab.baidu.com/fis-dev/yog-wise.git",
         "fis-pm" : "git+https://github.com/wangcheng714/fis-pm.git#crontab" //指定crontab分支
       }
 
-npm会自动下载指定url的node包，进行依赖处理和编译功能。因此我们可以将私有npm包放到公司的gitlab平台通过url指定。
+npm会自动下载指定url的node包，进行依赖处理和编译功能。因此我们可以将私有npm包放到lights平台，通过lights管理私有资源包。
 
-**版本管理和更新的问题**
+#### 问题
 
-由于直接使用git作为包的地址源，因此没有版本的概念。
-不过可以通过分支的方式来弥补版本的缺失，如上面第三个url，通过"#branch"指定下载的分支
-
-    //注意这里是分支而不是版本号
-    "fis-pm" : "git+https://github.com/wangcheng714/fis-pm.git#0.0.1"
-    "fis-pm" : "git+https://github.com/wangcheng714/fis-pm.git#0.0.2"
-
-如果有某些资源只希望对团队内部人员访问，还可以通过lights搭建自己的私有仓库，让npm从lights下载资源(lights支持gz包下载和版本管理)。
+npm update无法更新lights中的资源版本，需要通过url手工修改
 
 ###方案二：搭建私有npm仓库
 
@@ -112,12 +105,24 @@ npm支持通过registry指定私有仓库，现在也有较多的搭建仓库的
 
 
 目前看来第一种方案可以满足开发需求，而第二种方案需要npm registry指向私有仓库地址，在家无法连接，导致npm无法使用需要修改，
-相对也复杂一点，采用第一种npm+gitlab的方案。
+相对也复杂一点，前期采用第一种npm+gitlab的方案作为过渡方案，后期会计划利用lights搭建私有npm仓库。
 
-##todo
+##todo设计
 
-* node pack封装考虑
-* 私有资源仓库
+### node pack封装考虑
+
+### 私有资源仓库
+
+* 方案一 ： 直接利用lights，depends中写lights的zip地址，lights提供发布和版本管理功能。
+
+        缺点 : npm update 、 npm outdate等功能无法使用
+        优点 ： 开发成本最小
+
+* 方案二 ： 搭建npm私有服务，lights包装npm功能，并且封装node_modules包管理功能， 设置私有registry，
+
+        参考cnpm方案实现或者封装cnpm
+
+
 
 
 ##参考资料
