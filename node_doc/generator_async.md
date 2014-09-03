@@ -1,6 +1,8 @@
 
 # 大纲
 
+https://github.com/dead-horse/co-and-koa-talk
+
 ## 什么是generator
 
 generator 和 interator
